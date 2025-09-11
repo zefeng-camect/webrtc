@@ -55,6 +55,10 @@ RtpPacketizerH264::RtpPacketizerH264(rtc::ArrayView<const uint8_t> payload,
 
   for (const auto& nalu :
        H264::FindNaluIndices(payload.data(), payload.size())) {
+    if (nalu.payload_size == 0) {
+      RTC_LOG(LS_WARNING) << "Skipping an 0 size nalu begins at ", nalu.start_offset;
+      continue;
+    }
     input_fragments_.push_back(
         payload.subview(nalu.payload_start_offset, nalu.payload_size));
   }
